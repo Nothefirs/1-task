@@ -1,0 +1,125 @@
+const API_URL = "http://localhost:5000/tasks";
+
+//отримання всіх тасків
+async function fetchTasks() {
+    const response = await fetch(API_URL);
+    const tasks = await response.json();
+    const taskList = document.getElementById("task-list");
+    taskList.innerHTML = "";
+
+    tasks.forEach(task => {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `
+            <span id="task-text-${task._id}">${task.name} - ${task.description}</span>
+            <div id="task-actions-${task._id}">
+                <button onclick="toggleTask('${task._id}', ${task.completed})" class="btn btn-sm ${task.completed ? 'btn-success' : 'btn-secondary'}">
+                    ${task.completed ? "✔" : "✘"}
+                </button>
+                <button onclick="showEditForm('${task._id}', '${task.name}', '${task.description}')" class="btn btn-sm btn-warning">✏</button>
+                <button onclick="deleteTask('${task._id}')" class="btn btn-sm btn-danger">🗑</button>
+            </div>
+        `;
+        taskList.appendChild(li);
+    });
+}
+
+//додавання таску
+async function addTask(event) {
+    event.preventDefault();
+
+    const name = document.getElementById("task-name").value;
+    const description = document.getElementById("task-desc").value;
+
+    if (!name || !description) {
+        alert("Будь ласка, заповніть всі поля!");
+        return;
+    }
+
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description })
+    });
+
+    if (response.ok) {
+        document.getElementById("task-form").reset();
+        fetchTasks();
+    } else {
+        alert("Помилка при додаванні таску");
+    }
+}
+
+//відображення форми редагування
+function showEditForm(id, name, description) {
+    const taskText = document.getElementById(`task-text-${id}`);
+    const taskActions = document.getElementById(`task-actions-${id}`);
+
+    taskText.innerHTML = `
+        <input type="text" id="edit-name-${id}" class="form-control" value="${name}">
+        <input type="text" id="edit-desc-${id}" class="form-control mt-1" value="${description}">
+    `;
+    taskActions.innerHTML = `
+        <button onclick="editTask('${id}')" class="btn btn-sm btn-success">💾 Зберегти</button>
+        <button onclick="fetchTasks()" class="btn btn-sm btn-secondary">❌ Скасувати</button>
+    `;
+}
+
+//редагування таску
+async function editTask(id) {
+    const name = document.getElementById(`edit-name-${id}`).value;
+    const description = document.getElementById(`edit-desc-${id}`).value;
+
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description })
+    });
+
+    if (response.ok) {
+        fetchTasks();
+    } else {
+        alert("Помилка при редагуванні таску");
+    }
+}
+
+// видалення таску
+async function deleteTask(id) {
+    if (!confirm("Ви впевнені, що хочете видалити цю задачу?")) return;
+
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
+    });
+
+    if (response.ok) {
+        fetchTasks();
+    } else {
+        alert("Помилка при видаленні таску");
+    }
+}
+
+
+//зміна статусу завдання
+async function toggleTask(id, completed) {
+    const updateResponse = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: !completed })
+    });
+
+    if (updateResponse.ok) {
+        fetchTasks(); // Оновлення списку
+    } else {
+        alert("Помилка при зміні статусу завдання");
+    }
+}
+
+
+
+
+
+
+document.getElementById("task-form").addEventListener("submit", addTask);
+
+
+fetchTasks();
