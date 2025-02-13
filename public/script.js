@@ -14,14 +14,19 @@ async function fetchTasks() {
             <span id="task-text-${task._id}">${task.name} - ${task.description}</span>
             <div id="task-actions-${task._id}">
                 <button onclick="toggleTask('${task._id}', ${task.completed})" class="btn btn-sm ${task.completed ? 'btn-success' : 'btn-secondary'}">
-                    ${task.completed ? "✔" : "✘"}
+                    <i class="bi ${task.completed ? 'bi-check-lg' : 'bi-x-lg'}"></i>
                 </button>
-                <button onclick="showEditForm('${task._id}', '${task.name}', '${task.description}')" class="btn btn-sm btn-warning">✏</button>
-                <button onclick="deleteTask('${task._id}')" class="btn btn-sm btn-danger">🗑</button>
+                <button onclick="showEditForm('${task._id}', '${task.name}', '${task.description}')" class="btn btn-sm btn-warning">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button onclick="deleteTask('${task._id}')" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i>
+                </button>
             </div>
         `;
         taskList.appendChild(li);
     });
+    
 }
 
 //додавання таску
@@ -60,8 +65,12 @@ function showEditForm(id, name, description) {
         <input type="text" id="edit-desc-${id}" class="form-control mt-1" value="${description}">
     `;
     taskActions.innerHTML = `
-        <button onclick="editTask('${id}')" class="btn btn-sm btn-success">💾 Зберегти</button>
-        <button onclick="fetchTasks()" class="btn btn-sm btn-secondary">❌ Скасувати</button>
+    <button onclick="editTask('${id}')" class="btn btn-sm btn-success">
+        <i class="bi bi-save"></i> Зберегти
+    </button>
+    <button onclick="fetchTasks()" class="btn btn-sm btn-secondary">
+        <i class="bi bi-x"></i> Скасувати
+    </button>
     `;
 }
 
