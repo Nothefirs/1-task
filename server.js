@@ -46,13 +46,16 @@ app.get('/index.html', authMiddleware, (req, res) => {
 
 
 
-// Запуск сервера
-app.listen(PORT, () => {
-  console.log(`✅ Сервер запущено на http://localhost:${PORT}`);
-});
+// Запуск сервера тільки в режимі, коли не тестуємо
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`✅ Сервер запущено на http://localhost:${PORT}`);
+  });
+}
 
 
 
 
 
-
+// Експортуємо для тестів 
+module.exports = app;
