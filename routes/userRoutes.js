@@ -25,14 +25,6 @@ router.post('/', async (req, res) => {
     res.json({ message: "Користувача зареєстровано успішно" });
 });
 
-
-
-
-
-
-
-
-
 // Маршрут для входу
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -75,10 +67,6 @@ router.post('/logout', (req, res) => {
         res.json({ message: "Вихід успішний" });
     });
 });
-
-
-
-
 
 
 
@@ -148,8 +136,3 @@ router.post("/reset-password", async (req, res) => {
 
 
 module.exports = router;
-
-
-
-
-

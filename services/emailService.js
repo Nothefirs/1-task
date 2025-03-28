@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.MAILTRAP_USER,
         pass: process.env.MAILTRAP_PASS
-    }
+    }   
 });
 
 async function sendResetPasswordEmail(email, token) {

@@ -8,19 +8,39 @@ router.get("/", async (req, res) => {
     res.json(tasks);
 });
 
-// Додати нову задачу
+//Додати нову задачу
 router.post("/", async (req, res) => {
-    const { name, description } = req.body;
-    const newTask = new Task({ name, description });    
-    await newTask.save();
-    res.json(newTask);
+    try {
+        const { name, description, dueDate } = req.body;
+        const newTask = new Task({ name, description, dueDate });
+
+        await newTask.save();
+        res.status(201).json(newTask);
+    } catch (error) {
+        res.status(400).json({ error: "Помилка створення задачі" });
+    }
 });
 
 // Редагувати задачу
 router.put("/:id", async (req, res) => {
-    const { name, description, completed } = req.body;
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, { name, description, completed }, { new: true });
-    res.json(updatedTask);
+    try {
+        const { name, description, completed, dueDate } = req.body;
+        
+        // Оновлення задачі з урахуванням dueDate
+        const updatedTask = await Task.findByIdAndUpdate(
+            req.params.id,
+            { name, description, completed, dueDate },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedTask) {
+            return res.status(404).json({ error: "Задача не знайдена" });
+        }
+
+        res.json(updatedTask);
+    } catch (error) {
+        res.status(400).json({ error: "Помилка при редагуванні задачі" });
+    }
 });
 
 // Видалити задачу

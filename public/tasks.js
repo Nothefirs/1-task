@@ -49,7 +49,7 @@ document.getElementById('redirect-btn').addEventListener('click', () => {
 
 const API_URL = "http://localhost:5000/tasks";
 
-//отримання всіх тасків
+// 📌 Отримання всіх тасків
 async function fetchTasks() {
     const response = await fetch(API_URL);
     const tasks = await response.json();
@@ -59,13 +59,20 @@ async function fetchTasks() {
     tasks.forEach(task => {
         const li = document.createElement("li");
         li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+        // Форматуємо дату у вигляді "YYYY-MM-DD"
+        const formattedDate = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : "Не вказано";
+
         li.innerHTML = `
-            <span id="task-text-${task._id}">${task.name} - ${task.description}</span>
+            <span id="task-text-${task._id}">
+                <strong>${task.name}</strong> - ${task.description} <br>
+                <small class="text-muted">Дата: ${formattedDate}</small>
+            </span>
             <div id="task-actions-${task._id}">
                 <button onclick="toggleTask('${task._id}', ${task.completed})" class="btn btn-sm ${task.completed ? 'btn-success' : 'btn-secondary'}">
                     <i class="bi ${task.completed ? 'bi-check-lg' : 'bi-x-lg'}"></i>
                 </button>
-                <button onclick="showEditForm('${task._id}', '${task.name}', '${task.description}')" class="btn btn-sm btn-warning">
+                <button onclick="showEditForm('${task._id}', '${task.name}', '${task.description}', '${formattedDate}')" class="btn btn-sm btn-warning">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button onclick="deleteTask('${task._id}')" class="btn btn-sm btn-danger">
@@ -75,25 +82,26 @@ async function fetchTasks() {
         `;
         taskList.appendChild(li);
     });
-    
 }
 
-//додавання таску
+
+//Додавання таску
 async function addTask(event) {
     event.preventDefault();
 
     const name = document.getElementById("task-name").value;
     const description = document.getElementById("task-desc").value;
+    const dueDate = document.getElementById("task-date").value; // Отримуємо дату
 
-    if (!name || description) {
-        alert("Будь ласка, заповніть необхідні поля поля!");
+    if (!name || !description || !dueDate) {
+        alert("Будь ласка, заповніть усі необхідні поля!");
         return;
     }
 
     const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description })
+        body: JSON.stringify({ name, description, dueDate }) // Додаємо dueDate
     });
 
     if (response.ok) {
@@ -104,34 +112,38 @@ async function addTask(event) {
     }
 }
 
-//відображення форми редагування
-function showEditForm(id, name, description) {
+
+//Відображення форми редагування
+function showEditForm(id, name, description, dueDate) {
     const taskText = document.getElementById(`task-text-${id}`);
     const taskActions = document.getElementById(`task-actions-${id}`);
 
     taskText.innerHTML = `
         <input type="text" id="edit-name-${id}" class="form-control" value="${name}">
         <input type="text" id="edit-desc-${id}" class="form-control mt-1" value="${description}">
+        <input type="date" id="edit-date-${id}" class="form-control mt-1" value="${dueDate}">
     `;
+    
     taskActions.innerHTML = `
-    <button onclick="editTask('${id}')" class="btn btn-sm btn-success">
-        <i class="bi bi-save"></i> Зберегти
-    </button>
-    <button onclick="fetchTasks()" class="btn btn-sm btn-secondary">
-        <i class="bi bi-x"></i> Скасувати
-    </button>
+        <button onclick="editTask('${id}')" class="btn btn-sm btn-success">
+            <i class="bi bi-save"></i> Зберегти
+        </button>
+        <button onclick="fetchTasks()" class="btn btn-sm btn-secondary">
+            <i class="bi bi-x"></i> Скасувати
+        </button>
     `;
 }
 
-//редагування таску
+//Редагування таску
 async function editTask(id) {
     const name = document.getElementById(`edit-name-${id}`).value;
     const description = document.getElementById(`edit-desc-${id}`).value;
+    const dueDate = document.getElementById(`edit-date-${id}`).value;
 
     const response = await fetch(`${API_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description })
+        body: JSON.stringify({ name, description, dueDate })
     });
 
     if (response.ok) {
@@ -140,6 +152,7 @@ async function editTask(id) {
         alert("Помилка при редагуванні таску");
     }
 }
+
 
 // видалення таску
 async function deleteTask(id) {

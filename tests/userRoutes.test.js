@@ -119,3 +119,4 @@ describe("User API", () => {
         expect(response.body.message).toBe("Пароль успішно змінено"); 
     }); 
 });
+
