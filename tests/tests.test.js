@@ -32,7 +32,7 @@ afterAll(async () => {
 }); 
  
 describe("To-Do API", () => { 
-    it("✅ Створює нову задачу", async () => { 
+    it("Створює нову задачу", async () => { 
         const res = await request(app) 
             .post("/tasks") 
             .send({ name: "Тестова задача", description: "Опис тестової задачі" }); 
@@ -42,7 +42,7 @@ describe("To-Do API", () => {
         expect(res.body.name).toBe("Тестова задача"); 
     }); 
  
-    it("✅ Отримує всі задачі", async () => { 
+    it("Отримує всі задачі", async () => { 
         // Збереження задачі в базу перед тестом 
         await new Task({ name: "Тестова задача", description: "Опис" }).save(); 
          
@@ -52,7 +52,7 @@ describe("To-Do API", () => {
         expect(res.body.length).toBeGreaterThan(0); 
     }); 
  
-    it("✅ Оновлює задачу", async () => { 
+    it("Оновлює задачу", async () => { 
         // Спочатку зберігаємо задачу 
         const task = await new Task({ name: "Стара задача", description: "Старий опис" }).save(); 
          
@@ -64,7 +64,7 @@ describe("To-Do API", () => {
         expect(res.body.name).toBe("Оновлена задача"); 
     }); 
  
-    it("✅ Видаляє задачу", async () => { 
+    it("Видаляє задачу", async () => { 
         // Спочатку зберігаємо задачу 
         const task = await new Task({ name: "Зайва задача" }).save(); 
          

@@ -1,13 +1,12 @@
 //викид зі сторінки якщо немає сесії
 document.addEventListener('DOMContentLoaded', async function() {
-    // Перевірка статусу сесії
+
     const response = await fetch('http://localhost:5000/users/status');
     const data = await response.json();
 
     if (data.loggedIn) {
 
     } else {
-        //редирект на сторінку входу
         window.location.href = 'login.html'; 
     }
 });
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 //вихід з сесії
 document.getElementById('logout-btn').addEventListener('click', async () => {
     try {
-        // Відправка POST запиту на сервер для виходу з сесії
         const response = await fetch('http://localhost:5000/users/logout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
@@ -42,19 +40,17 @@ document.getElementById('redirect-btn').addEventListener('click', () => {
 
 
 
-
-
-
-
-
 const API_URL = "http://localhost:5000/tasks";
-let allTasks = [];
-
 // Оновлена функція отримання всіх задач
 async function fetchTasks() {
     const response = await fetch(API_URL);
-    allTasks = await response.json();
-    renderTasks(allTasks);
+    const allTasks = await response.json();
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    const tasksForToday = allTasks.filter(task => task.dueDate === today);
+    
+    renderTasks(tasksForToday);
 }
 
 // Функція відображення задач
@@ -89,19 +85,6 @@ function renderTasks(tasks) {
     });
 }
 
-// Функція фільтрації по даті
-function filterTasks() {
-    const filterDate = document.getElementById("filter-date").value;
-    
-    if (!filterDate) {
-        renderTasks(allTasks); // Якщо дата не вибрана, виводимо всі задачі
-        return;
-    }
-
-    const filteredTasks = allTasks.filter(task => task.dueDate && new Date(task.dueDate).toISOString().split('T')[0] === filterDate);
-    
-    renderTasks(filteredTasks);
-}
 
 
 //Додавання таску
@@ -110,7 +93,7 @@ async function addTask(event) {
 
     const name = document.getElementById("task-name").value;
     const description = document.getElementById("task-desc").value;
-    const dueDate = document.getElementById("task-date").value; // Отримуємо дату
+    const dueDate = document.getElementById("task-date").value;
 
     if (!name || !description || !dueDate) {
         alert("Будь ласка, заповніть усі необхідні поля!");
@@ -120,7 +103,7 @@ async function addTask(event) {
     const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, dueDate }) // Додаємо dueDate
+        body: JSON.stringify({ name, description, dueDate })
     });
 
     if (response.ok) {
@@ -130,7 +113,6 @@ async function addTask(event) {
         alert("Помилка при додаванні таску");
     }
 }
-
 
 //Відображення форми редагування
 function showEditForm(id, name, description, dueDate) {
@@ -172,7 +154,6 @@ async function editTask(id) {
     }
 }
 
-
 // видалення таску
 async function deleteTask(id) {
     if (!confirm("Ви впевнені, що хочете видалити цю задачу?")) return;
@@ -188,7 +169,6 @@ async function deleteTask(id) {
     }
 }
 
-
 //зміна статусу завдання
 async function toggleTask(id, completed) {
     const updateResponse = await fetch(`${API_URL}/${id}`, {
@@ -198,7 +178,7 @@ async function toggleTask(id, completed) {
     });
 
     if (updateResponse.ok) {
-        fetchTasks(); // Оновлення списку
+        fetchTasks();
     } else {
         alert("Помилка при зміні статусу завдання");
     }

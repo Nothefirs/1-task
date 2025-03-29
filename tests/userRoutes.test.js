@@ -69,10 +69,7 @@ describe("User API", () => {
         expect(response.body.message).toBe("Вхід успішний"); 
         expect(response.body.user.username).toBe("loginuser"); 
     }); 
- 
- 
-       
- 
+
     // Тест для виходу з сесії 
     it("should logout a user", async () => { 
         // Створимо користувача для тесту 
@@ -90,9 +87,7 @@ describe("User API", () => {
         expect(response.status).toBe(200); 
         expect(response.body.message).toBe("Вихід успішний"); 
     }); 
- 
- 
- 
+
     // Тест для скидання пароля 
     it("should reset the password", async () => { 
         const user = await new User({ 

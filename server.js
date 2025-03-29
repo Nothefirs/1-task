@@ -3,6 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const authMiddleware = require("./middleware/authMiddleware");
+const cron = require('node-cron');
+const Task = require('./models/Task'); 
+const { sendReminderEmail } = require('./services/emailRemaider');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,17 +46,46 @@ app.get('/index.html', authMiddleware, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
+// Захищений маршрут для Dashboard.html
+app.get('/Dashboard.html', authMiddleware, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'Dashboard.html'));
+});
 
 
 // Запуск сервера тільки в режимі, коли не тестуємо
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
-    console.log(`✅ Сервер запущено на http://localhost:${PORT}`);
+    console.log(`Сервер запущено на http://localhost:${PORT}`);
   });
 }
 
+//автоматична відправка емейла про задачі на сьогодні emailRemaider.js
+cron.schedule('05 17 * * *', async () => {
+  try {
+      console.log('Перевірка задач на сьогодні...');
 
+      const today = new Date().toISOString().split('T')[0];
+      console.log(`Поточна дата: ${today}`);
+
+
+      const tasksForToday = await Task.find({
+          dueDate: today
+      });
+
+      console.log(`Знайдено задач на сьогодні: ${tasksForToday.length}`);
+
+      if (tasksForToday.length > 0) {
+          tasksForToday.forEach(task => {
+              sendReminderEmail(task);
+          });
+      } else {
+          console.log('На сьогодні немає задач.');
+      }
+
+  } catch (error) {
+      console.error('Помилка при перевірці задач: ', error);
+  }
+});
 
 
 
