@@ -6,18 +6,18 @@ const { sendResetPasswordEmail } = require("../services/emailService");
 const crypto = require("crypto");
 
 // Реєстрація користувача
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
     const { username, email, password } = req.body;
-
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        return res.status(400).json({ message: "Користувач з таким email вже існує" });
+        return res
+            .status(400)
+            .json({ message: "Користувач з таким email вже існує" });
     }
 
     // Хешуємо пароль
     const hashedPassword = await bcrypt.hash(password, 10);
-
 
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
@@ -26,15 +26,15 @@ router.post('/', async (req, res) => {
 });
 
 // Маршрут для входу
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
     const { email, password } = req.body;
-
 
     const user = await User.findOne({ email });
     if (!user) {
-        return res.status(400).json({ message: "Користувача з таким email не знайдено" });
+        return res
+            .status(400)
+            .json({ message: "Користувача з таким email не знайдено" });
     }
-
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -46,11 +46,14 @@ router.post('/login', async (req, res) => {
     req.session.username = user.username;
 
     // Відправка відповіді з перенаправленням на index.html
-    res.json({ message: "Вхід успішний", user: { username: user.username, email: user.email } });
+    res.json({
+        message: "Вхід успішний",
+        user: { username: user.username, email: user.email },
+    });
 });
 
 // Маршрут для перевірки статусу сесії
-router.get('/status', (req, res) => {
+router.get("/status", (req, res) => {
     if (req.session.userId) {
         res.json({ loggedIn: true, user: { username: req.session.username } });
     } else {
@@ -59,7 +62,7 @@ router.get('/status', (req, res) => {
 });
 
 // Вихід з сесії
-router.post('/logout', (req, res) => {
+router.post("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return res.status(500).json({ message: "Помилка при виході" });
@@ -68,12 +71,7 @@ router.post('/logout', (req, res) => {
     });
 });
 
-
-
-
-
-
-// Запит на скидання пароля 
+// Запит на скидання пароля
 router.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
@@ -103,8 +101,7 @@ router.post("/reset-password", async (req, res) => {
     const user = await User.findOne({ resetPasswordToken: token });
 
     // Логування для перевірки
-    console.log('Отриманий токен з фронтенду:', token);
-
+    console.log("Отриманий токен з фронтенду:", token);
 
     if (!user) {
         return res.status(400).json({ message: "Невірний токен" });
@@ -127,6 +124,5 @@ router.post("/reset-password", async (req, res) => {
 
     res.json({ message: "Пароль успішно змінено" });
 });
-
 
 module.exports = router;

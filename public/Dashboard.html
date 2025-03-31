@@ -1,33 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Dashboard</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+        />
 
-    <button id="logout-btn" class="btn btn-danger mb-3">Вихід з сесії</button>
-    <button id="redirect-btn" class="btn btn-info mb-3">Перейти на сторінку входу без втрати сесії</button>
+        <button id="logout-btn" class="btn btn-danger mb-3">
+            Вихід з сесії
+        </button>
+        <button id="redirect-btn" class="btn btn-info mb-3">
+            Перейти на сторінку входу без втрати сесії
+        </button>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h1 class="text-center">Створення задач</h1>
+            <form id="task-form" class="mb-3">
+                <input
+                    type="text"
+                    id="task-name"
+                    class="form-control"
+                    placeholder="Назва задачі"
+                    required
+                />
+                <textarea
+                    id="task-desc"
+                    class="form-control mt-2"
+                    placeholder="Опис"
+                ></textarea>
+                <input type="date" id="task-date" required />
+                <button type="submit" class="btn btn-primary mt-2">
+                    Додати задачу
+                </button>
+            </form>
+            <h2 class="mt-4 text-center">Список сьогоднішніх задач</h2>
+            <ul id="task-list" class="list-group"></ul>
+        </div>
 
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="text-center">Створення задач</h1>
-        <form id="task-form" class="mb-3">
-            <input type="text" id="task-name" class="form-control" placeholder="Назва задачі" required>
-            <textarea id="task-desc" class="form-control mt-2" placeholder="Опис"></textarea>
-            <input type="date" id="task-date" required>
-            <button type="submit" class="btn btn-primary mt-2">Додати задачу</button>
-
-
-        </form>
-        <h2 class="mt-4 text-center">Список сьогоднішніх задач</h2>
-        <ul id="task-list" class="list-group"></ul>
-
-    </div>
-
-    <script src="Dashboard.js"></script>
-
-</body>
+        <script src="Dashboard.js"></script>
+    </body>
 </html>

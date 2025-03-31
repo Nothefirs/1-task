@@ -6,8 +6,8 @@ const transporter = nodemailer.createTransport({
     port: process.env.MAILTRAP_PORT,
     auth: {
         user: process.env.MAILTRAP_USER,
-        pass: process.env.MAILTRAP_PASS
-    }   
+        pass: process.env.MAILTRAP_PASS,
+    },
 });
 
 async function sendResetPasswordEmail(email, token) {
@@ -19,7 +19,7 @@ async function sendResetPasswordEmail(email, token) {
         subject: "Скидання пароля",
         html: `<p>Щоб скинути пароль, натисніть на посилання:</p>
                <a href="${resetLink}">${resetLink}</a>
-               <p>Якщо ви не запитували скидання пароля, просто ігноруйте цей лист.</p>`
+               <p>Якщо ви не запитували скидання пароля, просто ігноруйте цей лист.</p>`,
     };
 
     await transporter.sendMail(mailOptions);

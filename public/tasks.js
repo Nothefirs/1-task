@@ -1,51 +1,41 @@
 //викид зі сторінки якщо немає сесії
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener("DOMContentLoaded", async function () {
     // Перевірка статусу сесії
-    const response = await fetch('http://localhost:5000/users/status');
+    const response = await fetch("http://localhost:5000/users/status");
     const data = await response.json();
 
     if (data.loggedIn) {
-
     } else {
         //редирект на сторінку входу
-        window.location.href = 'login.html'; 
+        window.location.href = "login.html";
     }
 });
 
 //вихід з сесії
-document.getElementById('logout-btn').addEventListener('click', async () => {
+document.getElementById("logout-btn").addEventListener("click", async () => {
     try {
         // Відправка POST запиту на сервер для виходу з сесії
-        const response = await fetch('http://localhost:5000/users/logout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
+        const response = await fetch("http://localhost:5000/users/logout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
         });
-                
 
         const data = await response.json();
         if (response.ok) {
-            window.location.href = 'login.html';
+            window.location.href = "login.html";
         } else {
-            alert(data.message || 'Помилка при виході');
+            alert(data.message || "Помилка при виході");
         }
     } catch (error) {
-        console.error('Помилка при виході:', error);
-        alert('Сталася помилка при виході.');
+        console.error("Помилка при виході:", error);
+        alert("Сталася помилка при виході.");
     }
 });
 
-document.getElementById('redirect-btn').addEventListener('click', () => {
+document.getElementById("redirect-btn").addEventListener("click", () => {
     // Перехід на сторінку входу
-    window.location.href = 'login.html'; 
+    window.location.href = "login.html";
 });
-
-
-
-
-
-
-
-
 
 const API_URL = "http://localhost:5000/tasks";
 let allTasks = [];
@@ -62,11 +52,14 @@ function renderTasks(tasks) {
     const taskList = document.getElementById("task-list");
     taskList.innerHTML = "";
 
-    tasks.forEach(task => {
+    tasks.forEach((task) => {
         const li = document.createElement("li");
-        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.className =
+            "list-group-item d-flex justify-content-between align-items-center";
 
-        const formattedDate = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : "Не вказано";
+        const formattedDate = task.dueDate
+            ? new Date(task.dueDate).toISOString().split("T")[0]
+            : "Не вказано";
 
         li.innerHTML = `
             <span id="task-text-${task._id}">
@@ -74,8 +67,8 @@ function renderTasks(tasks) {
                 <small class="text-muted">Дата: ${formattedDate}</small>
             </span>
             <div id="task-actions-${task._id}">
-                <button onclick="toggleTask('${task._id}', ${task.completed})" class="btn btn-sm ${task.completed ? 'btn-success' : 'btn-secondary'}">
-                    <i class="bi ${task.completed ? 'bi-check-lg' : 'bi-x-lg'}"></i>
+                <button onclick="toggleTask('${task._id}', ${task.completed})" class="btn btn-sm ${task.completed ? "btn-success" : "btn-secondary"}">
+                    <i class="bi ${task.completed ? "bi-check-lg" : "bi-x-lg"}"></i>
                 </button>
                 <button onclick="showEditForm('${task._id}', '${task.name}', '${task.description}', '${formattedDate}')" class="btn btn-sm btn-warning">
                     <i class="bi bi-pencil"></i>
@@ -92,17 +85,20 @@ function renderTasks(tasks) {
 // Функція фільтрації по даті
 function filterTasks() {
     const filterDate = document.getElementById("filter-date").value;
-    
+
     if (!filterDate) {
         renderTasks(allTasks); // Якщо дата не вибрана, виводимо всі задачі
         return;
     }
 
-    const filteredTasks = allTasks.filter(task => task.dueDate && new Date(task.dueDate).toISOString().split('T')[0] === filterDate);
-    
+    const filteredTasks = allTasks.filter(
+        (task) =>
+            task.dueDate &&
+            new Date(task.dueDate).toISOString().split("T")[0] === filterDate
+    );
+
     renderTasks(filteredTasks);
 }
-
 
 //Додавання таску
 async function addTask(event) {
@@ -120,7 +116,7 @@ async function addTask(event) {
     const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, dueDate }) // Додаємо dueDate
+        body: JSON.stringify({ name, description, dueDate }), // Додаємо dueDate
     });
 
     if (response.ok) {
@@ -130,7 +126,6 @@ async function addTask(event) {
         alert("Помилка при додаванні таску");
     }
 }
-
 
 //Відображення форми редагування
 function showEditForm(id, name, description, dueDate) {
@@ -142,7 +137,7 @@ function showEditForm(id, name, description, dueDate) {
         <input type="text" id="edit-desc-${id}" class="form-control mt-1" value="${description}">
         <input type="date" id="edit-date-${id}" class="form-control mt-1" value="${dueDate}">
     `;
-    
+
     taskActions.innerHTML = `
         <button onclick="editTask('${id}')" class="btn btn-sm btn-success">
             <i class="bi bi-save"></i> Зберегти
@@ -162,7 +157,7 @@ async function editTask(id) {
     const response = await fetch(`${API_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, dueDate })
+        body: JSON.stringify({ name, description, dueDate }),
     });
 
     if (response.ok) {
@@ -172,13 +167,12 @@ async function editTask(id) {
     }
 }
 
-
 // видалення таску
 async function deleteTask(id) {
     if (!confirm("Ви впевнені, що хочете видалити цю задачу?")) return;
 
     const response = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
     });
 
     if (response.ok) {
@@ -188,13 +182,12 @@ async function deleteTask(id) {
     }
 }
 
-
 //зміна статусу завдання
 async function toggleTask(id, completed) {
     const updateResponse = await fetch(`${API_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: !completed })
+        body: JSON.stringify({ completed: !completed }),
     });
 
     if (updateResponse.ok) {
@@ -204,12 +197,6 @@ async function toggleTask(id, completed) {
     }
 }
 
-
-
-
-
-
 document.getElementById("task-form").addEventListener("submit", addTask);
-
 
 fetchTasks();

@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
     try {
         const { name, description, completed, dueDate } = req.body;
-        
+
         // Оновлення задачі з урахуванням dueDate
         const updatedTask = await Task.findByIdAndUpdate(
             req.params.id,
@@ -48,7 +48,5 @@ router.delete("/:id", async (req, res) => {
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: "Task deleted" });
 });
-
-
 
 module.exports = router;
