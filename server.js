@@ -25,7 +25,7 @@ app.use(express.json());
 
 // Підключення до бази даних MongoDB
 mongoose
-    .connect("mongodb://localhost:27017/todo-app", {
+    .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
